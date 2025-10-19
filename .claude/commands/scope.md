@@ -5,7 +5,7 @@ Execute AI-powered scoping with modular file generation, dependency management, 
 **New modular approach** - Individual file control, parallel execution, better debugging.
 
 **Alternatives:**
-- `/scope_file_N` - Generate individual files (2-14)
+- `/scope_file_N_{name}` - Generate individual files (e.g., `/scope_file_2_requirements`)
 - `/scope_templates` - Manual template-based scoping
 
 ## Parameters
@@ -37,10 +37,19 @@ This command runs the modular scoping agent with:
 
 **Generate specific file**:
 ```bash
-/scope_file_2 <adw_id>  # Requirements analysis
-/scope_file_3 <adw_id>  # User flows
-...
-/scope_file_14 <adw_id> # LLM prompts
+/scope_file_2_requirements <adw_id>  # Requirements analysis
+/scope_file_3_user_flows <adw_id>    # User flows & personas
+/scope_file_4_data_models <adw_id>   # Data models & entities
+/scope_file_5_data_schema <adw_id>   # Data schema ERD
+/scope_file_6_ml_research <adw_id>   # ML/AI research (Exa)
+/scope_file_7_aws_analysis <adw_id>  # AWS native analysis
+/scope_file_8_aws_services <adw_id>  # AWS services spec
+/scope_file_9_architecture <adw_id>  # Architecture diagram
+/scope_file_10_cdk_constructs <adw_id>  # CDK constructs
+/scope_file_11_security <adw_id>     # Security & RBAC
+/scope_file_12_cost_estimate <adw_id> # Cost estimate
+/scope_file_13_validation_gates <adw_id> # Validation gates
+/scope_file_14_llm_prompts <adw_id>  # LLM prompts & agents
 ```
 
 **Parallel execution groups**:
