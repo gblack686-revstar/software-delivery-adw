@@ -1,0 +1,1143 @@
+# Scoping File Generation Instructions
+# Each file is generated sequentially by Claude Code agent
+# Context from all previous files is passed to each subsequent generation
+
+files:
+  - number: 2
+    filename: "requirements_analysis.md"
+    title: "Requirements Analysis"
+    description: "Extract and analyze technical requirements from discovery brief"
+
+    instructions: |
+      Analyze the discovery brief and extract comprehensive requirements.
+
+      Create a requirements analysis document with:
+
+      ## Business Requirements
+      - Primary business goals and objectives
+      - Success criteria (quantitative and qualitative)
+      - Key performance indicators (KPIs)
+      - Expected business impact and ROI
+
+      ## Technical Requirements
+
+      ### Functional Requirements
+      - Core features and capabilities needed
+      - User-facing functionality
+      - Integration requirements with external systems
+      - Data processing requirements
+
+      ### Non-Functional Requirements
+      - Performance requirements (latency, throughput, concurrency)
+      - Scalability requirements (current and projected)
+      - Availability and reliability requirements (SLA targets)
+      - Security requirements (authentication, authorization, encryption)
+      - Compliance requirements (HIPAA, SOC2, GDPR, etc.)
+      - Data residency requirements
+
+      ### Constraints
+      - Technical constraints (existing systems, technology stack)
+      - Budget constraints
+      - Timeline constraints
+      - Resource constraints (team size, expertise)
+
+      ## Assumptions
+      - List key assumptions made
+      - Validate these with stakeholders
+
+      ## Risks
+      - Technical risks
+      - Business risks
+      - Mitigation strategies
+
+      ## Out of Scope
+      - Clearly define what is NOT included in this project
+
+      Format: Markdown with clear sections and bullet points.
+
+  - number: 3
+    filename: "user_flows.yaml"
+    title: "User Flows & Personas"
+    description: "Design user personas and their interaction workflows"
+
+    instructions: |
+      Based on the requirements analysis, design comprehensive user flows.
+
+      For each user persona:
+      1. Define the persona (role, goals, technical proficiency)
+      2. Map their primary workflows
+      3. Include authentication flows
+      4. Document error cases and edge cases
+      5. Specify data inputs and outputs at each step
+
+      Format: YAML with this structure:
+
+      ```yaml
+      personas:
+        - persona_id: PERSONA-001
+          name: "Primary User Role"
+          description: "..."
+          technical_proficiency: low|medium|high
+          goals:
+            - "Goal 1"
+            - "Goal 2"
+
+      user_flows:
+        - flow_id: UF-001
+          name: "Primary Workflow Name"
+          persona: PERSONA-001
+          description: "What this flow accomplishes"
+          frequency: "How often (daily/weekly/monthly)"
+          steps:
+            - step: 1
+              action: "What the user does"
+              system_response: "What the system does"
+              data_input: "Data provided by user"
+              data_output: "Data returned to user"
+            - step: 2
+              action: "..."
+          error_cases:
+            - error: "Invalid input"
+              handling: "Show error message, preserve user data"
+            - error: "System unavailable"
+              handling: "Queue request, notify user"
+          success_criteria:
+            - "User can complete action in < 30 seconds"
+            - "95% success rate"
+      ```
+
+      Include ALL user personas and their workflows.
+
+  - number: 4
+    filename: "data_models.yaml"
+    title: "Data Models & Entities"
+    description: "Design data entities, relationships, and schemas"
+
+    instructions: |
+      Based on user flows, design the data model.
+
+      For each entity:
+      1. Define all fields with types and constraints
+      2. Specify relationships to other entities
+      3. Define indexes for performance
+      4. Include sample data for validation
+      5. Specify validation rules
+
+      Format: YAML with this structure:
+
+      ```yaml
+      entities:
+        - name: EntityName
+          table: entity_table_name
+          description: "What this entity represents"
+          storage_type: "rds|dynamodb|s3"
+          fields:
+            - name: id
+              type: uuid
+              primary_key: true
+              required: true
+              description: "Unique identifier"
+            - name: created_at
+              type: timestamp
+              required: true
+              auto_generated: true
+            - name: field_name
+              type: string|integer|boolean|json|text
+              max_length: 255
+              min_value: 0
+              required: true|false
+              unique: true|false
+              default: null
+              validation: "regex pattern or rule"
+          relationships:
+            - type: one_to_many|many_to_one|many_to_many
+              entity: OtherEntity
+              foreign_key: other_entity_id
+              description: "Relationship description"
+          indexes:
+            - name: idx_entity_field
+              fields: [field1, field2]
+              unique: true|false
+              type: btree|hash
+          sample_data:
+            - id: "uuid-example"
+              field_name: "example value"
+      ```
+
+      Design entities based on the user flows and requirements.
+
+  - number: 5
+    filename: "data_schema.mmd"
+    title: "Data Schema ERD"
+    description: "Visual entity relationship diagram"
+
+    instructions: |
+      Create a Mermaid ERD diagram visualizing the data model.
+
+      Include:
+      - All entities from data_models.yaml
+      - All relationships with cardinality
+      - Primary keys (PK)
+      - Foreign keys (FK)
+      - Unique constraints (UK)
+
+      Format: Mermaid erDiagram syntax:
+
+      ```mermaid
+      ---
+      title: Data Schema - Entity Relationship Diagram
+      ---
+      erDiagram
+          EntityA ||--o{ EntityB : "has many"
+          EntityA {
+              uuid id PK
+              string field1 UK
+              timestamp created_at
+          }
+
+          EntityB {
+              uuid id PK
+              uuid entity_a_id FK
+              string field2
+          }
+      ```
+
+      Relationship symbols:
+      - ||--|| : one to one
+      - ||--o{ : one to many
+      - }o--o{ : many to many
+
+      Create a complete, accurate ERD matching data_models.yaml.
+
+  - number: 6
+    filename: "ml_research.md"
+    title: "ML/AI Model Research"
+    description: "Research state-of-the-art models and techniques (using Exa)"
+
+    instructions: |
+      **IMPORTANT: Use Exa API to conduct research on ML/AI models.**
+
+      If this project involves ML, AI, computer vision, NLP, or data science:
+
+      ## Research to Conduct (using Exa):
+
+      ### 1. Model Selection Research
+      - Search for state-of-the-art models for the specific use case
+      - Find pre-trained models (HuggingFace, AWS Marketplace, TensorFlow Hub)
+      - Compare architectures (Transformers, CNNs, RNNs, etc.)
+      - Research performance benchmarks
+      - Find academic papers (2023-2025)
+      - Search for industry implementations and case studies
+
+      ### 2. Data Science Techniques
+      - Preprocessing techniques for the data type
+      - Feature engineering approaches
+      - Data augmentation strategies
+      - Handling imbalanced/small datasets
+
+      ### 3. Training Infrastructure
+      - GPU requirements (G5, P4, P5 instances)
+      - SageMaker vs self-managed training
+      - Distributed training if needed
+      - Inference optimization (quantization, pruning)
+
+      ### 4. MLOps Strategy
+      - Model versioning and registry
+      - Experiment tracking tools
+      - Monitoring and drift detection
+      - A/B testing strategies
+      - Retraining pipelines
+
+      ## Output Format:
+
+      ```markdown
+      # ML/AI Research Summary
+
+      ## Use Case Classification
+      - Problem type: [Classification/Regression/Segmentation/Generation]
+      - Domain: [Computer Vision/NLP/Time Series/etc.]
+
+      ## Recommended Models
+
+      ### Primary Recommendation
+      - **Model:** [Name and architecture]
+      - **Justification:** [Why this model]
+      - **Pre-trained:** [HuggingFace/AWS links]
+      - **Performance:** [Benchmarks on similar datasets]
+      - **Resources:** [GPU type, memory, training time]
+
+      ### Alternatives
+      1. Model 2: Description and tradeoffs
+      2. Model 3: Description and tradeoffs
+
+      ## Data Techniques
+
+      ### Preprocessing
+      - Technique 1: Purpose and implementation
+
+      ### Feature Engineering
+      - Approach 1
+
+      ### Data Augmentation
+      - Strategy 1
+
+      ## Training Infrastructure
+
+      ### Recommended Setup
+      - Training: SageMaker/EC2
+      - Instance: ml.g5.xlarge
+      - Distributed: Yes/No
+
+      ### Inference Setup
+      - Endpoint: Real-time/Serverless/Batch
+      - Instance: ml.g5.xlarge
+      - Optimization: Quantization/Pruning
+
+      ## MLOps Strategy
+
+      ### Experiment Tracking
+      - Tool: SageMaker Experiments/MLflow
+
+      ### Model Registry
+      - SageMaker Model Registry
+
+      ### Monitoring
+      - Metrics: Data drift, model performance, latency
+      - Tools: SageMaker Model Monitor
+
+      ### Retraining
+      - Trigger: Schedule/performance degradation
+      - Frequency: Weekly/Monthly
+
+      ## Research Findings
+
+      ### Academic Papers
+      1. [Paper](link) - Key insight
+
+      ### Industry Implementations
+      1. [Company](link) - Approach
+
+      ### Open Source Models
+      1. [Model](link) - Description
+
+      ## Risks & Mitigations
+      - Risk 1: Mitigation
+
+      ## Next Steps
+      1. Validate with stakeholders
+      2. POC with recommended model
+      3. Evaluate on sample data
+      ```
+
+      **Use the ExaResearcher class to conduct this research automatically.**
+
+      If NOT an ML/AI project, write:
+      ```markdown
+      # ML/AI Research Summary
+
+      **Not applicable** - This project does not require ML/AI capabilities.
+      ```
+
+  - number: 7
+    filename: "aws_native_analysis.md"
+    title: "AWS Native Service Analysis"
+    description: "Evaluate AWS-native vs non-native service options"
+
+    instructions: |
+      Analyze which AWS services best fit the requirements and ML model needs.
+
+      **Priority:** Use AWS-native services wherever possible to minimize integration complexity.
+
+      For each capability needed:
+
+      ## Decision Framework:
+      1. Check if AWS has a native service
+      2. If yes → use it (document benefits)
+      3. If no → evaluate managed third-party or self-managed
+      4. Document integration complexity for non-native
+
+      ## Format:
+
+      ```markdown
+      # AWS-Native Service Analysis
+
+      ## Service Selection Summary
+
+      | Capability | AWS Native | Status | Integration Complexity |
+      |------------|------------|--------|----------------------|
+      | Compute | Lambda | NATIVE | None |
+      | Database | RDS | NATIVE | None |
+      | ML Training | SageMaker | NATIVE | None |
+      | Search | OpenSearch | NATIVE | None |
+
+      ## Native AWS Services (SELECTED)
+
+      ### 1. [Service Name]
+      - **Purpose:** What it does
+      - **Why selected:** Fits requirements because...
+      - **ML model support:** Supports models from ml_research.md
+      - **Integration benefits:**
+        - IAM role-based permissions
+        - CloudWatch integration
+        - VPC connectivity
+        - Cost tracking in Cost Explorer
+      - **Managed aspects:** Patching, scaling, backups
+
+      ### 2. [Next Service]
+      ...
+
+      ## Non-Native Services (IF REQUIRED)
+
+      ### [Service Name]
+      - **Purpose:** What it does
+      - **Why AWS lacks equivalent:** Explanation
+      - **Alternative considered:** AWS service evaluated
+      - **Integration complexity:**
+        - Authentication: API keys (not IAM)
+        - Networking: VPC endpoint needed
+        - Monitoring: Custom CloudWatch metrics
+        - Logging: Forward to CloudWatch
+        - Cost tracking: Manual
+      - **Maintenance overhead:** Updates, patches, monitoring
+      - **Integration time estimate:** X hours
+      - **Recommendation:** Use/Avoid/Evaluate
+
+      ## Integration Complexity Matrix
+
+      | Aspect | Native | Non-Native |
+      |--------|--------|------------|
+      | Auth | IAM | API keys |
+      | Monitoring | CloudWatch | Custom |
+      | Cost tracking | Cost Explorer | Manual |
+
+      ## Decision Rationale
+
+      **Why we prefer AWS-native:**
+      1. Reduced operational overhead
+      2. Unified IAM security
+      3. Integrated monitoring
+      4. Cost visibility
+      5. Compliance handled by AWS
+
+      **When to use non-native:**
+      - AWS service doesn't exist
+      - Specific features not in AWS service
+      - Team expertise in third-party tool
+      - Significantly lower cost
+
+      ## Recommendations
+      1. Prioritize native services
+      2. Validate AWS alternatives before third-party
+      3. Document integration overhead
+      4. Budget maintenance time
+
+      ## Risk Assessment
+      - Native: Service limits (plan quota increases)
+      - Non-native: Integration complexity, maintenance overhead
+      ```
+
+      Ensure ML models from ml_research.md are supported by selected services.
+
+  - number: 8
+    filename: "aws_services.yaml"
+    title: "AWS Services Specification"
+    description: "Detailed AWS service configurations with naming conventions"
+
+    instructions: |
+      Create detailed AWS service specifications based on aws_native_analysis.md.
+
+      Include:
+      - Complete naming conventions: {project}_{environment}_{function}
+      - Full resource names for all services
+      - Directory paths for Lambda, S3
+      - IAM policies and environment variables
+      - CloudWatch log group paths
+      - Secrets Manager paths
+
+      Format: YAML following this structure:
+
+      ```yaml
+      # AWS Services Configuration
+
+      ## Naming Convention
+      # Pattern: {project_name}_{environment}_{function}
+
+      project_name: {adw_id}
+      environment: dev
+
+      services:
+        # Compute Services
+        - service: Lambda
+          purpose: "API Backend Functions"
+          naming_pattern: "{project}_{environment}_{function}"
+          functions:
+            - name: api_handler
+              full_name: "{project}_dev_api_handler"
+              runtime: python3.11
+              memory: 512
+              timeout: 30
+              handler: "index.handler"
+              code_path: "lambda/api_handler"
+              environment_vars:
+                - DB_CONNECTION_STRING
+                - API_KEY_SECRET_ARN
+              iam_policies:
+                - "ssm:GetParameter"
+                - "secretsmanager:GetSecretValue"
+              layers:
+                - common_libs
+
+        # Storage Services
+        - service: S3
+          naming_pattern: "{project}-{environment}-{bucket_type}"
+          buckets:
+            - name: data
+              full_name: "{project}-dev-data"
+              versioning: true
+              encryption: "AES256"
+              directories:
+                - uploads/
+                - processed/
+                - exports/
+
+        # Database Services
+        - service: DynamoDB
+          naming_pattern: "{project}_{environment}_{table}"
+          tables:
+            - name: users
+              full_name: "{project}_dev_users"
+              partition_key: user_id (String)
+              billing_mode: PAY_PER_REQUEST
+
+        - service: RDS
+          naming_pattern: "{project}-{environment}-{db_name}"
+          instances:
+            - name: primary
+              full_name: "{project}-dev-primary"
+              engine: postgres
+              version: "15.4"
+              instance_class: db.t3.micro
+
+        # API & Networking
+        - service: API Gateway
+          naming_pattern: "{project}-{environment}-api"
+          apis:
+            - name: main_api
+              type: REST
+              endpoints:
+                - /api/v1/resource
+
+        # Authentication
+        - service: Cognito
+          naming_pattern: "{project}_{environment}_{pool_type}"
+          user_pools:
+            - name: user_pool
+              full_name: "{project}_dev_user_pool"
+
+        # ML/AI Services (if applicable)
+        - service: SageMaker
+          naming_pattern: "{project}_{environment}_{model}"
+          endpoints:
+            - name: inference
+              instance_type: ml.t3.medium
+              model_s3_path: "s3://{project}-dev-models/"
+
+        # Monitoring
+        - service: CloudWatch
+          naming_pattern: "/aws/{service}/{project}/{environment}/{resource}"
+          log_groups:
+            - /aws/lambda/{project}/dev/api_handler
+          dashboards:
+            - name: "{project}_dev_overview"
+
+        # Secrets Management
+        - service: Secrets Manager
+          naming_pattern: "{project}/{environment}/{secret_type}"
+          secrets:
+            - name: "{project}/dev/db_credentials"
+              rotation: 30 days
+
+      ## Directory Structure
+
+      infrastructure/
+        cdk/
+          lib/
+            stacks/
+              compute-stack.ts
+              storage-stack.ts
+
+      application/
+        lambda/
+          api_handler/
+            index.py
+
+      ## Estimated Total Monthly Cost
+      - Without ML: $40-80/month
+      - With ML: $240-380/month
+      ```
+
+      Base this on services selected in aws_native_analysis.md.
+
+  - number: 9
+    filename: "architecture.mmd"
+    title: "Architecture Diagram"
+    description: "System architecture with all components and data flow"
+
+    instructions: |
+      Create a comprehensive Mermaid architecture diagram.
+
+      Include:
+      - User-facing components (CloudFront, API Gateway)
+      - Backend services (Lambda, ECS, EC2)
+      - ML/AI components (SageMaker, Bedrock)
+      - Databases (RDS, DynamoDB, S3)
+      - Authentication (Cognito, IAM)
+      - Monitoring (CloudWatch)
+      - External integrations
+      - Data flow arrows showing request/response paths
+
+      Format: Mermaid flowchart syntax:
+
+      ```mermaid
+      graph TB
+          User[User/Client] --> CloudFront[CloudFront CDN]
+          CloudFront --> APIGateway[API Gateway]
+          APIGateway --> Authorizer[Cognito Authorizer]
+          Authorizer --> Lambda[Lambda Functions]
+
+          Lambda --> RDS[(RDS Database)]
+          Lambda --> DynamoDB[(DynamoDB)]
+          Lambda --> S3[S3 Storage]
+          Lambda --> SageMaker[SageMaker Endpoint]
+          Lambda --> Bedrock[Bedrock Knowledge Base]
+
+          SageMaker --> S3Models[S3 Model Storage]
+          Bedrock --> OpenSearch[OpenSearch Vector DB]
+
+          Lambda --> CloudWatch[CloudWatch Logs]
+          Lambda --> Secrets[Secrets Manager]
+
+          %% Styling
+          classDef compute fill:#FF9900,color:#000
+          classDef storage fill:#3B48CC,color:#fff
+          classDef ml fill:#01A88D,color:#fff
+
+          class Lambda,APIGateway compute
+          class RDS,DynamoDB,S3 storage
+          class SageMaker,Bedrock ml
+      ```
+
+      Create a clear, comprehensive architecture matching aws_services.yaml.
+
+  - number: 10
+    filename: "cdk_constructs.md"
+    title: "CDK Constructs & Implementation Guidance"
+    description: "Research CDK construct libraries for implementation"
+
+    instructions: |
+      Research available CDK construct libraries for this project.
+
+      Reference: aws_cdk_frameworks_report.md in Downloads folder
+
+      ## Research Areas:
+
+      ### 1. Generative AI CDK Constructs (if ML/AI project)
+      - AWS Generative AI CDK Constructs (awslabs)
+      - Bedrock constructs
+      - SageMaker constructs
+      - RAG patterns
+      - Knowledge base constructs
+
+      ### 2. AWS Solutions Constructs
+      - Find relevant patterns from 100+ available
+      - API Gateway + Lambda + DynamoDB patterns
+      - Data lake patterns
+      - Monitoring patterns
+
+      ### 3. Project-Specific Recommendations
+      - Which constructs fit this architecture?
+      - Sample CDK stack structure
+      - Construct import statements
+
+      ## Output Format:
+
+      ```markdown
+      # CDK Constructs & Implementation Guidance
+
+      ## Recommended Construct Libraries
+
+      ### 1. AWS Generative AI CDK Constructs
+      - **Use if:** Project uses Bedrock, SageMaker, RAG
+      - **Installation:** `npm install @cdklabs/generative-ai-cdk-constructs`
+      - **Key constructs:**
+        - bedrock.KnowledgeBase
+        - bedrock.Agent
+        - CustomSageMakerEndpoint
+
+      ### 2. AWS Solutions Constructs
+      - **Pattern:** aws-apigateway-lambda-dynamodb
+      - **Installation:** `npm install @aws-solutions-constructs/aws-apigateway-lambda-dynamodb`
+
+      ## Sample CDK Stack Structure
+
+      ```typescript
+      import * as cdk from 'aws-cdk-lib';
+      import { bedrock } from '@cdklabs/generative-ai-cdk-constructs';
+
+      export class ProjectStack extends cdk.Stack {
+        constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+          super(scope, id, props);
+
+          // Example construct usage
+          const knowledgeBase = new bedrock.KnowledgeBase(this, 'KB', {
+            embeddingsModel: bedrock.BedrockFoundationModel.TITAN_EMBED_TEXT_V1,
+          });
+        }
+      }
+      ```
+
+      ## Implementation Checklist
+      - [ ] Install construct libraries
+      - [ ] Set up CDK app structure
+      - [ ] Define stacks per aws_services.yaml
+      - [ ] Configure naming conventions
+      - [ ] Set up CI/CD pipeline
+
+      ## Resources
+      - [Construct Hub](https://constructs.dev)
+      - [AWS Solutions Constructs](https://github.com/awslabs/aws-solutions-constructs)
+      - [Generative AI Constructs](https://github.com/awslabs/generative-ai-cdk-constructs)
+      ```
+
+      Base recommendations on services from aws_services.yaml and ml_research.md.
+
+  - number: 11
+    filename: "security_rbac.md"
+    title: "Security, Authentication & RBAC"
+    description: "Complete security blueprint with authentication and authorization"
+
+    instructions: |
+      Design complete security architecture including authentication, authorization, and compliance.
+
+      ## Security Design:
+
+      ### 1. Authentication Strategy
+      - Cognito User Pool configuration
+      - JWT token flow (ID, Access, Refresh tokens)
+      - MFA requirements
+      - Password policies
+      - Email/phone verification
+
+      ### 2. User Roles & Permissions
+      Define 4 role hierarchy:
+      - admin (full system access)
+      - manager (team/resource management)
+      - user (standard access)
+      - readonly (view-only)
+
+      For each role, specify:
+      - Cognito group name
+      - IAM permissions
+      - API endpoint access
+      - Resource-level permissions
+      - UI feature access
+
+      ### 3. Authorization Levels
+      - **Application-level:** Cognito groups
+      - **API-level:** API Gateway authorizers
+      - **Lambda-level:** Check claims in handler
+      - **Resource-level:** Ownership validation
+      - **Row-level:** Database query filters
+      - **Column-level:** Field-level encryption
+
+      ### 4. Lambda Authorization Code
+      Provide Python code example for checking permissions:
+
+      ```python
+      def check_authorization(event, required_role, resource_id=None):
+          claims = event['requestContext']['authorizer']['claims']
+          user_id = claims['sub']
+          user_groups = claims.get('cognito:groups', '').split(',')
+
+          # Role validation
+          # Resource ownership validation
+          # Return authorized/unauthorized
+      ```
+
+      ### 5. Compliance Requirements
+      - OWASP Top 10 mitigations
+      - SOC 2 requirements (if applicable)
+      - HIPAA requirements (if healthcare)
+      - GDPR requirements (if EU data)
+      - Data residency requirements
+
+      ### 6. Security Best Practices
+      - Encryption at rest (KMS)
+      - Encryption in transit (TLS 1.3)
+      - Secrets management (Secrets Manager)
+      - VPC isolation
+      - Security groups
+      - WAF rules
+      - DDoS protection (Shield)
+      - Audit logging
+
+      ### 7. Incident Response
+      - Detection (CloudWatch alarms)
+      - Response procedures
+      - Escalation paths
+
+      Format: Markdown with code examples and clear sections.
+
+      Base this on requirements_analysis.md compliance requirements.
+
+  - number: 12
+    filename: "cost_estimate.md"
+    title: "AWS Cost Estimate"
+    description: "Detailed monthly cost breakdown with scenarios"
+
+    instructions: |
+      Calculate detailed AWS cost estimates based on aws_services.yaml.
+
+      ## Cost Calculation:
+
+      For each AWS service:
+      1. Identify pricing model (per request, per hour, per GB)
+      2. Estimate usage (requests/month, storage GB, compute hours)
+      3. Calculate monthly cost
+      4. Provide low/medium/high scenarios
+
+      ## Format:
+
+      ```markdown
+      # AWS Cost Estimate
+
+      ## Assumptions
+
+      ### Traffic & Usage
+      - Monthly active users: 1,000 / 5,000 / 10,000 (low/med/high)
+      - API requests/month: 100K / 500K / 1M
+      - Storage: 50GB / 200GB / 500GB
+      - ML inference requests: 10K / 50K / 100K (if applicable)
+
+      ### Operational
+      - Development environment: Always on
+      - Production environment: 24/7
+      - Data retention: 90 days
+
+      ## Monthly Cost Breakdown
+
+      ### Compute
+      - **Lambda:**
+        - Requests: 500K × $0.20/1M = $0.10
+        - Duration: 50K GB-seconds × $0.0000166667 = $0.83
+        - **Total: $0.93**
+
+      - **ECS/Fargate** (if applicable):
+        - vCPU: 0.25 × 720 hours × $0.04048 = $7.29
+        - Memory: 0.5GB × 720 hours × $0.004445 = $1.60
+        - **Total: $8.89**
+
+      ### Storage
+      - **RDS PostgreSQL:**
+        - db.t3.micro: $0.018/hour × 720 = $12.96
+        - Storage: 20GB × $0.115 = $2.30
+        - Backup: 20GB × $0.095 = $1.90
+        - **Total: $17.16**
+
+      - **DynamoDB:**
+        - On-demand reads: 10M × $0.25/M = $2.50
+        - On-demand writes: 1M × $1.25/M = $1.25
+        - Storage: 5GB × $0.25 = $1.25
+        - **Total: $5.00**
+
+      - **S3:**
+        - Storage: 100GB × $0.023 = $2.30
+        - Requests: 100K × $0.005/1K = $0.50
+        - **Total: $2.80**
+
+      ### ML/AI Services (if applicable)
+      - **SageMaker Endpoint:**
+        - ml.t3.medium: $0.065/hour × 720 = $46.80
+        - **Total: $46.80**
+
+      - **Bedrock:**
+        - Claude Sonnet: 100K input tokens × $3/M = $0.30
+        - 50K output tokens × $15/M = $0.75
+        - **Total: $1.05**
+
+      ### Networking
+      - **CloudFront:** 100GB × $0.085 = $8.50
+      - **Data Transfer Out:** 50GB × $0.09 = $4.50
+      - **Total: $13.00**
+
+      ### Monitoring & Operations
+      - **CloudWatch:**
+        - Logs: 10GB × $0.50 = $5.00
+        - Metrics: 100 × $0.30 = $30.00
+        - Alarms: 10 × $0.10 = $1.00
+        - **Total: $36.00**
+
+      - **Secrets Manager:** 5 secrets × $0.40 = $2.00
+
+      ### Authentication
+      - **Cognito:** 5,000 MAU (free tier) = $0.00
+
+      ## Total Monthly Cost Scenarios
+
+      | Scenario | Compute | Storage | ML/AI | Networking | Monitoring | **Total** |
+      |----------|---------|---------|-------|------------|------------|-----------|
+      | **Low** (1K users) | $10 | $25 | $0 | $8 | $38 | **$81** |
+      | **Medium** (5K users) | $25 | $45 | $48 | $13 | $43 | **$174** |
+      | **High** (10K users) | $50 | $75 | $95 | $25 | $50 | **$295** |
+
+      ## Cost Optimization Recommendations
+
+      1. **Compute:**
+         - Use Lambda for variable workloads (pay per use)
+         - Use Reserved Instances for RDS (40% savings)
+         - Enable auto-scaling to match demand
+
+      2. **Storage:**
+         - Use S3 Intelligent-Tiering for infrequent access
+         - Enable DynamoDB on-demand billing for unpredictable traffic
+         - Implement data lifecycle policies (delete old data)
+
+      3. **ML/AI:**
+         - Use SageMaker Serverless for low-traffic endpoints
+         - Batch predictions instead of real-time where possible
+         - Use Bedrock on-demand vs provisioned throughput
+
+      4. **Networking:**
+         - Use CloudFront for static assets (reduce origin requests)
+         - Enable compression to reduce data transfer
+
+      5. **Monitoring:**
+         - Set log retention to 30 days (not indefinite)
+         - Use metric filters instead of custom metrics
+         - Archive old logs to S3 Glacier
+
+      ## Annual Cost Projection
+
+      - **Year 1:** $174/month × 12 = **$2,088**
+      - **Year 2** (2x growth): $295/month × 12 = **$3,540**
+      - **Year 3** (3x growth): $450/month × 12 = **$5,400**
+
+      ## Budget Alerts
+      - Set CloudWatch billing alarm at $200/month
+      - Review costs weekly in Cost Explorer
+      - Set budgets per environment (dev: $50, prod: $150)
+      ```
+
+      Use actual AWS pricing (as of October 2025) and services from aws_services.yaml.
+
+  - number: 13
+    filename: "validation_gates.yaml"
+    title: "Validation Gates & Success Metrics"
+    description: "Success criteria and quality gates for all project phases"
+
+    instructions: |
+      Define validation gates and success metrics for ALL 11 project phases.
+
+      For each phase (Discovery, Scoping, Planning, Development, Testing, Code Review, Configuration, Deployment, Infrastructure Testing):
+
+      1. **Validation Gates:**
+         - Gate ID and name
+         - Type (technical_review, automated_testing, business_approval)
+         - Required criteria
+         - Approval required (yes/no)
+         - Approver role
+
+      2. **Success Metrics:**
+         - Quantitative metrics (numbers, percentages, benchmarks)
+         - Qualitative metrics (assessments, reviews)
+         - Target values
+         - Measurement methods
+
+      Format: YAML with this structure:
+
+      ```yaml
+      ## Phase 2: Scoping
+
+      validation_gates:
+        - gate_id: SG-001
+          name: "Technical Architecture Approved"
+          type: technical_review
+          required: true
+          criteria:
+            - Architecture diagram completed
+            - AWS services selected
+            - Data models defined
+          approval_required: true
+          approver: Tech Lead + Security Team
+
+      success_metrics:
+        quantitative:
+          - metric: "AWS services documented"
+            target: "100% of required services"
+            measurement: "Count in aws_services.yaml"
+          - metric: "Cost estimate accuracy"
+            target: "Within ±15% of actual"
+            measurement: "Compare to AWS bill Month 1"
+
+        qualitative:
+          - metric: "Architecture scalability"
+            target: "Supports 10x growth"
+            measurement: "Architecture review by senior engineer"
+
+      ## Project-Wide Success Criteria
+
+      overall_success_metrics:
+        quantitative:
+          - metric: "On-time delivery"
+            target: "±10% of timeline"
+          - metric: "Production incidents"
+            target: "≤ 2 P1 incidents in Month 1"
+          - metric: "API performance"
+            target: "p95 latency ≤ 500ms"
+
+        qualitative:
+          - metric: "Code quality"
+            target: "Maintainable, well-documented"
+          - metric: "Team satisfaction"
+            target: "Positive retrospective"
+
+      critical_path_gates:
+        - SG-001  # Architecture approved before development
+        - DEV-002 # Tests pass before code review
+        - REV-001 # No blockers before deployment
+        - DEP-004 # Production approval required
+      ```
+
+      Base this on requirements from requirements_analysis.md.
+
+  - number: 14
+    filename: "llm_prompts.yaml"
+    title: "LLM Prompts & Agent Configurations"
+    description: "AI agent configurations for subsequent project phases"
+
+    instructions: |
+      Configure AI agents for Planning, Development, Testing, Review, and Infrastructure phases.
+
+      For each agent:
+      1. Agent ID and name
+      2. Model configuration (claude-sonnet-4-5-20250929)
+      3. Temperature (0.1-0.4 based on task)
+      4. System prompt with role and principles
+      5. Tools enabled
+      6. Context templates
+      7. Code style guides (if development agent)
+      8. Retry strategies (if testing agent)
+
+      Format: YAML with this structure:
+
+      ```yaml
+      prompts:
+        - agent_id: planning
+          name: "Planning Agent"
+          description: "Creates agile stories and sprint plans"
+
+          model:
+            provider: anthropic
+            model_id: claude-sonnet-4-5-20250929
+            temperature: 0.3
+            max_tokens: 12000
+
+          system_prompt: |
+            You are an expert Agile Project Manager and Product Owner.
+
+            Your role:
+            1. Break down technical specs into user stories
+            2. Estimate story complexity (story points)
+            3. Organize stories into sprints
+            4. Identify dependencies and risks
+
+            Principles:
+            - Stories should be INVEST (Independent, Negotiable, Valuable, Estimable, Small, Testable)
+            - Acceptance criteria must be testable
+            - Estimate conservatively
+            - Front-load risky work
+
+          tools:
+            - name: file_read
+              enabled: true
+            - name: file_write
+              enabled: true
+
+          context_template: |
+            # Technical Specifications
+            {{ scoping_files }}
+
+            # Sprint Configuration
+            - Duration: {{ sprint_duration }} weeks
+            - Velocity: {{ velocity }} points/sprint
+
+        - agent_id: development
+          name: "Development Agent"
+
+          model:
+            provider: anthropic
+            model_id: claude-sonnet-4-5-20250929
+            temperature: 0.2
+            max_tokens: 16000
+
+          system_prompt: |
+            You are an expert Full-Stack Software Engineer.
+
+            Code quality standards:
+            - Functions: ≤ 50 lines, single responsibility
+            - Cyclomatic complexity: ≤ 10
+            - Test coverage: ≥ 80%
+            - Type hints required
+            - Docstrings for all public functions
+
+          code_style_guide: |
+            Python:
+            - Use Black for formatting
+            - Use Ruff for linting
+            - Type hints (mypy strict)
+            - Google-style docstrings
+
+            TypeScript:
+            - ESLint + Prettier
+            - Strict mode enabled
+            - JSDoc for public APIs
+
+          tools:
+            - name: file_read
+            - name: file_write
+            - name: edit
+            - name: bash
+            - name: grep
+
+        - agent_id: testing
+          name: "Testing Agent"
+
+          model:
+            temperature: 0.1
+
+          retry_strategy: |
+            Attempt 1: Fix obvious errors
+            Attempt 2: Fix logic errors
+            Attempt 3: Review expectations vs implementation
+            Attempt 4: Escalate to human
+
+      ## Model Selection Guide
+
+      model_recommendations:
+        discovery_scoping:
+          recommended_model: claude-sonnet-4-5-20250929
+          temperature: 0.2-0.3
+          rationale: "Complex reasoning, architecture design"
+
+        development:
+          recommended_model: claude-sonnet-4-5-20250929
+          temperature: 0.1-0.2
+          rationale: "Code generation"
+
+        testing_review:
+          recommended_model: claude-sonnet-4-5-20250929
+          temperature: 0.1
+          rationale: "Analytical tasks, bug fixing"
+      ```
+
+      Configure agents for all subsequent project phases.

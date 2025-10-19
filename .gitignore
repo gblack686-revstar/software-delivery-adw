@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Environment
+.env
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Project specific
+agents/*/
+specs/*/
+trees/*/
+projects/*/
+undefined/
+
+# Keep .claude commands!
+!.claude/
+!.claude/commands/
+!.claude/commands/**
