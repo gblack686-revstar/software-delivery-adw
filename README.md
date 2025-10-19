@@ -534,7 +534,7 @@ software-delivery-adw/
 │   ├── mcp.test.json
 │   ├── mcp.reviewer.json
 │   └── mcp.deployer.json
-├── .claude/commands/           # Claude Code slash commands
+├── claude_commands/commands/   # Claude Code slash commands (renamed from .claude to avoid OneDrive deletion)
 │   ├── discover.md
 │   ├── scope.md
 │   ├── planning.md
@@ -773,7 +773,7 @@ uv run adws/adw_test.py --adw-id abc123 --issue-number 42
 ## 📚 Documentation
 
 ### Slash Commands
-All workflows have detailed Claude Code documentation in `.claude/commands/`:
+All workflows have detailed Claude Code documentation in `claude_commands/commands/` (renamed from `.claude` to prevent OneDrive/antivirus deletion):
 
 - **discover.md** - Discovery workflow
 - **scope.md** - Scoping with CDK generation
@@ -899,7 +899,7 @@ uv run adws/adw_config.py --adw-id abc123 --action sync --direction local_to_clo
 This system is designed to be extensible:
 
 - **Add New Workflows** - Create new phase scripts in `adws/`
-- **Custom Agents** - Define new agent types in `.claude/commands/`
+- **Custom Agents** - Define new agent types in `claude_commands/commands/`
 - **MCP Servers** - Add new MCP configurations in `subagent_configs/`
 - **CDK Constructs** - Extend CDK templates in scoping phase
 - **Configuration Schemas** - Define custom validation rules

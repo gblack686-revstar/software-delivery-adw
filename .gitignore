@@ -21,7 +21,6 @@ trees/*/
 projects/*/
 undefined/
 
-# Keep .claude commands!
-!.claude/
-!.claude/commands/
-!.claude/commands/**
+# Claude Code commands (renamed from .claude to avoid OneDrive/antivirus deletion)
+# Commands are in claude_commands/ instead of .claude/
+# DO NOT change back to .claude/ - it gets auto-deleted by OneDrive/antivirus!
