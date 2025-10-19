@@ -348,20 +348,21 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
     # Set up environment with only required variables
     env = get_claude_env()
 
-    # Temporarily move .claude directory to prevent hooks from consuming stdin
-    # Even with --print, hooks can interfere with stdin reading
-    claude_dir = None
-    claude_backup_dir = None
-    if request.working_dir:
-        claude_dir = os.path.join(request.working_dir, ".claude")
-        if os.path.exists(claude_dir):
-            try:
-                # Create a unique temp directory to store .claude
-                claude_backup_dir = tempfile.mkdtemp(prefix="claude_backup_")
-                backup_path = os.path.join(claude_backup_dir, ".claude")
-                shutil.move(claude_dir, backup_path)
-            except Exception:
-                claude_backup_dir = None  # If backup fails, proceed without it
+    # DISABLED: .claude backup logic was causing .claude directory to be deleted
+    # The backup/restore mechanism was fragile and caused data loss on interruptions
+    # TODO: Find alternative solution for stdin conflicts with hooks
+    # claude_dir = None
+    # claude_backup_dir = None
+    # if request.working_dir:
+    #     claude_dir = os.path.join(request.working_dir, ".claude")
+    #     if os.path.exists(claude_dir):
+    #         try:
+    #             # Create a unique temp directory to store .claude
+    #             claude_backup_dir = tempfile.mkdtemp(prefix="claude_backup_")
+    #             backup_path = os.path.join(claude_backup_dir, ".claude")
+    #             shutil.move(claude_dir, backup_path)
+    #         except Exception:
+    #             claude_backup_dir = None  # If backup fails, proceed without it
 
     try:
         # Open output file for streaming with UTF-8 encoding
@@ -532,20 +533,22 @@ def prompt_claude_code(request: AgentPromptRequest) -> AgentPromptResponse:
             retry_code=RetryCode.EXECUTION_ERROR,
         )
     finally:
-        # Restore .claude directory if it was backed up
-        if claude_backup_dir and os.path.exists(claude_backup_dir):
-            try:
-                backup_path = os.path.join(claude_backup_dir, ".claude")
-                if os.path.exists(backup_path):
-                    # Remove any .claude that Claude Code may have created
-                    if os.path.exists(claude_dir):
-                        shutil.rmtree(claude_dir)
-                    # Restore original .claude
-                    shutil.move(backup_path, claude_dir)
-                # Clean up temp directory
-                shutil.rmtree(claude_backup_dir, ignore_errors=True)
-            except Exception:
-                pass  # Best effort restoration
+        # DISABLED: .claude restore logic (see backup logic above)
+        # This was causing .claude directory deletions
+        # if claude_backup_dir and os.path.exists(claude_backup_dir):
+        #     try:
+        #         backup_path = os.path.join(claude_backup_dir, ".claude")
+        #         if os.path.exists(backup_path):
+        #             # Remove any .claude that Claude Code may have created
+        #             if os.path.exists(claude_dir):
+        #                 shutil.rmtree(claude_dir)
+        #             # Restore original .claude
+        #             shutil.move(backup_path, claude_dir)
+        #         # Clean up temp directory
+        #         shutil.rmtree(claude_backup_dir, ignore_errors=True)
+        #     except Exception:
+        #         pass  # Best effort restoration
+        pass  # Cleanup logic disabled
 
 
 def execute_template(request: AgentTemplateRequest) -> AgentPromptResponse:
