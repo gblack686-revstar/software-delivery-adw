@@ -231,11 +231,17 @@ def check_file_exists(adw_id: str, file_num: int) -> bool:
     Returns:
         True if file exists
     """
+    specs_dir = Path(f"specs/{adw_id}")
+
+    # Special case for file 1 (discovery brief - created during discovery phase)
+    if file_num == 1:
+        file_path = specs_dir / "1_discovery_brief.md"
+        return file_path.exists()
+
     file_config = get_file_config(file_num)
     if not file_config:
         return False
 
-    specs_dir = Path(f"specs/{adw_id}")
     filename = file_config['filename']
     file_path = specs_dir / f"{file_num}_{filename}"
 
