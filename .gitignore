@@ -21,6 +21,7 @@ trees/*/
 projects/*/
 undefined/
 
-# Claude Code commands (renamed from .claude to avoid OneDrive/antivirus deletion)
-# Commands are in claude_commands/ instead of .claude/
-# DO NOT change back to .claude/ - it gets auto-deleted by OneDrive/antivirus!
+# Claude Code commands
+# Actual commands stored in: claude_commands/commands/ (tracked by git)
+# Junction for Claude CLI: .claude → claude_commands (not tracked, recreate with: mklink /J .claude claude_commands)
+.claude/

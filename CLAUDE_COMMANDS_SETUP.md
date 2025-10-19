@@ -1,157 +1,164 @@
 # Claude Commands Setup Guide
 
-## The Problem
+## The Problem (CORRECTED)
 
-**TL;DR**: OneDrive and/or Windows antivirus automatically delete directories starting with a dot (`.claude`), causing slash commands to disappear.
+**ROOT CAUSE**: The backup/restore logic in `adws/adw_modules/agent.py` was causing `.claude` directory deletions.
 
-### What's Happening
+### What Was Happening
 
-1. Claude Code CLI expects commands in `.claude/commands/` by default
-2. OneDrive/Windows antivirus actively deletes directories starting with `.`
-3. This creates a cycle: `.claude/` appears → immediately deleted → repeats
-4. Commands are safely stored in git as `claude_commands/commands/` instead
+1. **Initial Issue**: `.claude/commands/` directory kept disappearing
+2. **First Theory** (INCORRECT): OneDrive/antivirus deleting dot-prefixed directories
+3. **Actual Cause**: agent.py was doing this:
+   ```python
+   # Move .claude to temp directory before running Claude CLI
+   shutil.move(claude_dir, backup_path)
 
-## The Solution
+   # ... run Claude CLI ...
+
+   # Try to restore .claude after (would fail on interruptions)
+   shutil.move(backup_path, claude_dir)
+   ```
+4. **Why It Failed**: If the process was interrupted, `.claude` wouldn't be restored
+
+### Evidence
+
+- ✅ `.docker` persists (dot-prefixed directories work fine)
+- ✅ Test `.claude` directory persists for 30+ seconds
+- ✅ Disabling backup/restore logic fixed the issue (commit `d97acc1`)
+- ❌ OneDrive/antivirus theory was wrong
+
+## The Solution (IMPLEMENTED)
 
 ### Current State
 
-- ✅ **All 26 commands are safe in git**: `claude_commands/commands/`
-- ✅ **Protected from deletion**: `claude_commands/` is not dot-prefixed
-- ❌ **Claude CLI can't find them**: CLI looks in `.claude/commands/`
+1. **Fixed**: Disabled backup/restore logic in agent.py (commit `d97acc1`)
+2. **Safe Storage**: Commands stored in git as `claude_commands/` (commit `b5ce0e4`)
+3. **Compatibility**: Junction created `.claude → claude_commands`
+4. **Result**: Slash commands work, no deletions
 
-### Workaround Options
+### Directory Structure
 
-#### Option 1: Create Temporary Symlink (Recommended for quick testing)
-
-```bash
-# Create junction (Windows symlink) - may still get deleted by OneDrive
-mklink /J .claude claude_commands
-
-# If it gets deleted, recreate it before running claude commands
-# This is temporary and will be deleted by OneDrive/antivirus
+```
+software-delivery-adw/
+├── .claude/                    → junction to claude_commands/
+├── claude_commands/
+│   └── commands/              ← actual commands stored here (in git)
+│       ├── discover.md
+│       ├── scope.md
+│       ├── scope_file_2_requirements.md
+│       └── ... (26 commands total)
 ```
 
-#### Option 2: Copy Commands Temporarily
+### How It Works
 
-```bash
-# Copy commands to .claude before using Claude CLI
-cp -r claude_commands/.claude .claude
+- **Git tracks**: `claude_commands/commands/` (real files)
+- **Claude CLI sees**: `.claude/commands/` (junction points to claude_commands)
+- **Junction**: Windows junction persists indefinitely, no deletion
 
-# Use Claude CLI
-claude
-
-# .claude will be auto-deleted by OneDrive shortly after
-```
-
-#### Option 3: Disable OneDrive for This Directory (Best permanent solution)
-
-1. Right-click on the `software-delivery-adw` folder
-2. Select "Always keep on this device" or exclude from OneDrive sync
-3. Create permanent symlink:
-   ```bash
-   mklink /J .claude claude_commands
-   ```
-
-#### Option 4: Add OneDrive Exception
-
-1. Open OneDrive settings
-2. Go to "Sync and backup" → "Advanced settings"
-3. Add `software-delivery-adw\.claude` to exclusions
-4. Create permanent symlink:
-   ```bash
-   mklink /J .claude claude_commands
-   ```
-
-## Files in claude_commands/commands/
-
-All 26 slash commands are available:
+## Available Commands
 
 ### Core ADW Workflow (12 commands)
-1. `discover.md` - Discovery phase
-2. `scope.md` - Full scoping (uses modular approach)
-3. `planning.md` - Planning phase
-4. `develop.md` - Development phase
-5. `test.md` - Testing phase
-6. `review.md` - Review phase
-7. `deploy.md` - Deployment phase
-8. `test_infra.md` - Infrastructure testing
-9. `config.md` - Configuration management
-10. `install_worktree.md` - Worktree setup
-11. `resolve_failed_test.md` - Test failure resolution
-12. `resolve_failed_e2e_test.md` - E2E test failure resolution
+1. `/discover` - Discovery phase
+2. `/scope` - Full scoping (uses modular approach)
+3. `/planning` - Planning phase
+4. `/develop` - Development phase
+5. `/test` - Testing phase
+6. `/review` - Review phase
+7. `/deploy` - Deployment phase
+8. `/test_infra` - Infrastructure testing
+9. `/config` - Configuration management
+10. `/install_worktree` - Worktree setup
+11. `/resolve_failed_test` - Test failure resolution
+12. `/resolve_failed_e2e_test` - E2E test failure resolution
 
 ### Modular Scoping (13 commands)
-1. `scope_file_2_requirements.md` - Requirements analysis
-2. `scope_file_3_user_flows.md` - User flow design
-3. `scope_file_4_data_models.md` - Data model design
-4. `scope_file_5_data_schema.md` - ERD generation
-5. `scope_file_6_ml_research.md` - ML/AI research
-6. `scope_file_7_aws_analysis.md` - AWS service analysis
-7. `scope_file_8_aws_services.md` - AWS service selection
-8. `scope_file_9_architecture.md` - Architecture design
-9. `scope_file_10_cdk_constructs.md` - CDK code generation
-10. `scope_file_11_security.md` - Security analysis
-11. `scope_file_12_cost_estimate.md` - Cost estimation
-12. `scope_file_13_validation_gates.md` - Validation gates
-13. `scope_file_14_llm_prompts.md` - LLM prompt templates
+1. `/scope_file_2_requirements` - Requirements analysis
+2. `/scope_file_3_user_flows` - User flow design
+3. `/scope_file_4_data_models` - Data model design
+4. `/scope_file_5_data_schema` - ERD generation
+5. `/scope_file_6_ml_research` - ML/AI research (can run parallel with #11)
+6. `/scope_file_7_aws_analysis` - AWS service analysis
+7. `/scope_file_8_aws_services` - AWS service selection
+8. `/scope_file_9_architecture` - Architecture design
+9. `/scope_file_10_cdk_constructs` - CDK code generation (can run parallel with #12, #13, #14)
+10. `/scope_file_11_security` - Security analysis (can run parallel with #6)
+11. `/scope_file_12_cost_estimate` - Cost estimation (can run parallel with #10, #13, #14)
+12. `/scope_file_13_validation_gates` - Validation gates (can run parallel with #10, #12, #14)
+13. `/scope_file_14_llm_prompts` - LLM prompt templates (can run parallel with #10, #12, #13)
 
-## Git Commits
+## Git History
 
-The rename from `.claude/` to `claude_commands/` was done in commit `b5ce0e4`:
+### Commits Related to This Issue
 
 ```
-b5ce0e4 CRITICAL FIX: Rename .claude → claude_commands to prevent deletion
-d97acc1 CRITICAL FIX: Disable .claude backup/restore logic that was causing deletions
+d97acc1 - CRITICAL FIX: Disable .claude backup/restore logic that was causing deletions
+b5ce0e4 - CRITICAL FIX: Rename .claude → claude_commands to prevent deletion
+e5c9972 - Update .gitignore and README to reflect claude_commands/ structure
+4e3cf9b - Add comprehensive guide (WRONG theory about OneDrive)
 ```
 
-## Never Do This
+### What Actually Fixed It
 
-❌ **Do NOT rename `claude_commands/` back to `.claude/`** - it will be auto-deleted by OneDrive/antivirus within seconds
-
-❌ **Do NOT commit `.claude/` to git** - it won't persist on disk
+**Commit `d97acc1`** - Disabled this problematic code in agent.py:
+```python
+# DISABLED: .claude backup logic was causing .claude directory to be deleted
+# The backup/restore mechanism was fragile and caused data loss on interruptions
+```
 
 ## Troubleshooting
 
-### .claude keeps appearing and disappearing
+### Junction missing after git operations
 
-This is expected. Something (likely Claude Code CLI) creates `.claude/`, then OneDrive/antivirus immediately deletes it. This is harmless - your commands are safe in `claude_commands/`.
+If the junction gets removed (e.g., after `git clean`), recreate it:
 
-### Slash commands not working in Claude CLI
+```bash
+cd "C:\Users\gblac\OneDrive\Desktop\tac\software-delivery-adw"
+cmd //c "mklink /J .claude claude_commands"
+```
 
-You need to either:
-1. Create a temporary junction: `mklink /J .claude claude_commands`
-2. Or use the Python scripts directly: `uv run python adws/adw_scoping_modular.py`
+### Slash commands not working
 
-### How to use slash commands
-
-If you want to use slash commands like `/scope` or `/discover`:
-
-1. Create temporary junction before starting Claude CLI:
+1. Verify junction exists:
    ```bash
-   mklink /J .claude claude_commands
+   ls -la .claude/commands/
    ```
 
-2. Start Claude CLI immediately:
+2. If missing, recreate junction:
    ```bash
-   claude
+   cmd //c "mklink /J .claude claude_commands"
    ```
 
-3. Use your slash commands (they'll work until OneDrive deletes .claude)
+3. Verify Claude CLI can find commands:
+   ```bash
+   ls -la .claude/commands/ | wc -l  # Should show 26+ files
+   ```
 
-Alternatively, call the Python scripts directly without needing slash commands:
+### Using commands without slash notation
+
+You can call Python scripts directly:
+
 ```bash
 # Instead of /discover
 uv run python adws/adw_discovery.py --adw-id my_project
 
 # Instead of /scope
 uv run python adws/adw_scoping_modular.py --adw-id my_project --all
+
+# Individual scoping files
+uv run python adws/adw_scoping_modular.py --adw-id my_project --file-num 2
 ```
 
-## Investigation Results
+## Never Do This
 
-From commit history and testing:
-- **Root cause**: OneDrive and/or Windows Defender Antivirus
-- **Deletion speed**: <5 seconds after creation
-- **Affected directories**: Any starting with `.` (dot prefix)
-- **Unaffected**: `claude_commands/` (no dot prefix) - persists indefinitely
-- **Evidence**: Renamed directory persisted, original .claude deleted repeatedly
+❌ **Do NOT re-enable the backup/restore logic in agent.py** - it causes data loss on interruptions
+
+❌ **Do NOT delete claude_commands/** - that's where the real commands are stored
+
+❌ **Do NOT commit .claude/ to git** - it's a junction, not a real directory
+
+## Summary
+
+**Problem**: agent.py backup/restore logic was fragile and caused `.claude` deletions
+**Fix**: Disabled the backup/restore code
+**Current State**: Commands in `claude_commands/`, junction at `.claude`, everything works
+**Maintenance**: Recreate junction if needed after git operations
