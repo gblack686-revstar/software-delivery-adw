@@ -1,6 +1,18 @@
 # Scoping File Generation Instructions
-# Each file is generated sequentially by Claude Code agent
-# Context from all previous files is passed to each subsequent generation
+# Files can be generated individually or in optimal order with parallel execution
+# Context from prerequisite files is passed to each generation
+
+# Dependency graph for parallel execution:
+# - File 2: depends on [1]
+# - File 3: depends on [2]
+# - File 4: depends on [3]
+# - File 5: depends on [4]
+# - File 6: depends on [5] (can run parallel with 11)
+# - File 11: depends on [5] (can run parallel with 6)
+# - File 7: depends on [6, 11]
+# - File 8: depends on [7]
+# - File 9: depends on [8]
+# - Files 10, 12, 13, 14: depend on [9] (can all run in parallel)
 
 files:
   - number: 2
